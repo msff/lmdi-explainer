@@ -1,0 +1,374 @@
+/* ─── Design Tokens ─────────────────────────────── */
+:root {
+  --bg: #eaeaea;
+  --ink: #111111;
+  --ink-50: rgba(17, 17, 17, 0.5);
+  --ink-20: rgba(17, 17, 17, 0.2);
+  --ink-10: rgba(17, 17, 17, 0.1);
+  --ink-05: rgba(17, 17, 17, 0.05);
+  --surface: #ffffff;
+  --sidebar-bg: #111111;
+  --sidebar-ink: #eaeaea;
+  --accent: #2563eb;
+  --positive: #22c55e;
+  --negative: #ef4444;
+  --orange: #f59e0b;
+  --font-display: 'Instrument Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --line: 1px;
+  --radius: 2px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 24px;
+  --spacing-lg: 48px;
+  --spacing-xl: 72px;
+  --sidebar-width: 260px;
+}
+
+/* ─── Reset ─────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-display);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* ─── Typography ────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.125rem; }
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-50);
+}
+
+/* ─── Layout ────────────────────────────────────── */
+#root {
+  display: flex;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
+  max-width: calc(960px + var(--sidebar-width));
+}
+
+/* ─── Wireframe Grid Background ─────────────────── */
+main::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  left: var(--sidebar-width);
+  background-image:
+    linear-gradient(var(--ink-05) var(--line), transparent var(--line)),
+    linear-gradient(90deg, var(--ink-05) var(--line), transparent var(--line));
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+main > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── KPI Card ──────────────────────────────────── */
+.kpi-card {
+  background: var(--surface);
+  border: var(--line) solid var(--ink-10);
+  padding: var(--spacing-sm) var(--spacing-md);
+  position: relative;
+}
+
+.kpi-card .label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.kpi-card .value {
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.kpi-card .annotation {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-50);
+  margin-top: var(--spacing-xs);
+}
+
+/* Corner marks */
+.kpi-card::before,
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: var(--line) solid var(--ink-20);
+}
+
+.kpi-card::before {
+  top: -1px;
+  right: -1px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.kpi-card::after {
+  bottom: -1px;
+  left: -1px;
+  border-right: none;
+  border-top: none;
+}
+
+/* ─── Chart Container ───────────────────────────── */
+.chart-container {
+  background: var(--surface);
+  border: var(--line) solid var(--ink-10);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+/* ─── Key Takeaway ──────────────────────────────── */
+.takeaway {
+  border-left: 3px solid var(--accent);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  background: rgba(37, 99, 235, 0.04);
+  font-style: italic;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* ─── Chapter Section ───────────────────────────── */
+.chapter {
+  padding: var(--spacing-xl) 0;
+  border-bottom: var(--line) solid var(--ink-10);
+}
+
+.chapter:last-child {
+  border-bottom: none;
+}
+
+.chapter-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.chapter-header .chapter-number {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-50);
+  flex-shrink: 0;
+}
+
+.chapter p {
+  max-width: 640px;
+  margin-bottom: var(--spacing-md);
+  font-size: 0.9375rem;
+}
+
+.chapter p strong {
+  font-weight: 600;
+}
+
+/* ─── Slider ────────────────────────────────────── */
+.slider-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+}
+
+.slider-group label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  min-width: 80px;
+  color: var(--ink-50);
+}
+
+.slider-group input[type="range"] {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--ink-10);
+  border-radius: 2px;
+  outline: none;
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink);
+  cursor: grab;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--ink-20);
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.slider-group .slider-value {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ─── KPI Row ───────────────────────────────────── */
+.kpi-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-md) 0;
+}
+
+.kpi-row .kpi-card {
+  flex: 1;
+}
+
+/* ─── Formula ───────────────────────────────────── */
+.formula-block {
+  text-align: center;
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-sm) 0;
+}
+
+/* ─── Positive/Negative colors ──────────────────── */
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
+
+/* ─── Data Table ────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.data-table th {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-50);
+  font-weight: 500;
+  text-align: right;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-bottom: var(--line) solid var(--ink-20);
+}
+
+.data-table th:first-child {
+  text-align: left;
+}
+
+.data-table td {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  text-align: right;
+  border-bottom: var(--line) solid var(--ink-05);
+}
+
+.data-table td:first-child {
+  text-align: left;
+  color: var(--ink-50);
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+  font-weight: 600;
+}
+
+/* ─── Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-20);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-50);
+}
+
+/* ─── Reduced Motion ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Responsive ────────────────────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 52px;
+  }
+  main {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+  main {
+    margin-left: 0;
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+}
