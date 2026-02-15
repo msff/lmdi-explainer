@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatCurrency } from '../utils/format';
 
 export interface WaterfallEntry {
   name: string;
@@ -27,12 +28,6 @@ interface Props {
   formatValue?: (v: number) => string;
 }
 
-const defaultFormat = (v: number) => {
-  if (Math.abs(v) >= 1e9) return `${(v / 1e9).toFixed(2)}B`;
-  if (Math.abs(v) >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
-  if (Math.abs(v) >= 1e3) return `$${(v / 1000).toFixed(0)}k`;
-  return v.toFixed(0);
-};
 
 /** Generate nice round tick values for Y axis */
 function niceYTicks(min: number, max: number, count = 5): number[] {
@@ -48,7 +43,7 @@ function niceYTicks(min: number, max: number, count = 5): number[] {
   return ticks;
 }
 
-export function WaterfallChart({ entries, height = 300, formatValue = defaultFormat }: Props) {
+export function WaterfallChart({ entries, height = 300, formatValue = formatCurrency }: Props) {
   const svgWidth = 600;
   const marginTop = 28;
   const marginBottom = 36;

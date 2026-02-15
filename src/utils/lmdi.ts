@@ -8,19 +8,23 @@ export function logMean(a: number, b: number): number {
   return (a - b) / (Math.log(a) - Math.log(b));
 }
 
+/** Factor values for a single sector in both periods. */
+export interface SectorFactors {
+  before: number[];
+  after: number[];
+}
+
 /**
  * LMDI additive decomposition.
  *
  * Given sectors where V_i = product of factors x_{k,i},
  * compute the contribution of each factor k to total ΔV.
  *
- * @param sectors Array of { before: number[], after: number[] }
- *   where before[k] and after[k] are factor k values in period 0 and T.
+ * @param sectors Array of SectorFactors where before[k] and after[k]
+ *   are factor k values in period 0 and T.
  * @returns contributions[k] = total contribution of factor k across all sectors.
  */
-export function lmdiDecompose(
-  sectors: { before: number[]; after: number[] }[]
-): number[] {
+export function lmdiDecompose(sectors: SectorFactors[]): number[] {
   if (sectors.length === 0) return [];
   const numFactors = sectors[0].before.length;
   const contributions = new Array(numFactors).fill(0);

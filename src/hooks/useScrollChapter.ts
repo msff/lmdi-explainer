@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-const CHAPTERS = 7;
-
 export function useScrollChapter() {
   const [active, setActive] = useState(1);
 
@@ -13,7 +11,7 @@ export function useScrollChapter() {
             const id = entry.target.getAttribute('id');
             if (id) {
               const num = parseInt(id.replace('chapter-', ''), 10);
-              if (num >= 1 && num <= CHAPTERS) setActive(num);
+              if (!isNaN(num)) setActive(num);
             }
           }
         }
@@ -21,16 +19,14 @@ export function useScrollChapter() {
       { threshold: 0.3 }
     );
 
-    for (let i = 1; i <= CHAPTERS; i++) {
-      const el = document.getElementById(`chapter-${i}`);
-      if (el) observer.observe(el);
-    }
+    const els = document.querySelectorAll('[id^="chapter-"]');
+    els.forEach((el) => observer.observe(el));
 
     // Handle initial hash
     const hash = window.location.hash;
     if (hash.startsWith('#chapter-')) {
       const num = parseInt(hash.replace('#chapter-', ''), 10);
-      if (num >= 1 && num <= CHAPTERS) setActive(num);
+      if (!isNaN(num)) setActive(num);
     }
 
     return () => observer.disconnect();

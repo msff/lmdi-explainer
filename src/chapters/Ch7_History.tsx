@@ -1,4 +1,4 @@
-export function Ch8_History() {
+export function Ch7_History() {
   const timeline = [
     {
       year: '1925',

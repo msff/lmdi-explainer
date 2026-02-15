@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -7,14 +8,12 @@ interface Props {
 }
 
 export function Formula({ tex, display = false }: Props) {
-  const html = katex.renderToString(tex, {
-    throwOnError: false,
-    displayMode: display,
-  });
-  return (
-    <span
-      className={display ? 'formula-block' : undefined}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+  const html = useMemo(
+    () => katex.renderToString(tex, { throwOnError: false, displayMode: display }),
+    [tex, display]
   );
+  if (display) {
+    return <div className="formula-block" dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }

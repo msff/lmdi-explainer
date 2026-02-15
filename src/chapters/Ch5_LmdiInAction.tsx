@@ -3,8 +3,9 @@ import { Formula } from '../components/Formula';
 import { Slider } from '../components/Slider';
 import { WaterfallChart, type WaterfallEntry } from '../components/WaterfallChart';
 import { logMean, lmdiSimple } from '../utils/lmdi';
+import { formatCurrency } from '../utils/format';
 
-export function Ch6_LmdiInAction() {
+export function Ch5_LmdiInAction() {
   const [users0, setUsers0] = useState(600);
   const [price0, setPrice0] = useState(30);
   const [users1, setUsers1] = useState(1400);
@@ -20,27 +21,21 @@ export function Ch6_LmdiInAction() {
   const laspResid = (users1 - users0) * (price1 - price0);
 
   const lmdiEntries: WaterfallEntry[] = [
-    { name: 'Rev₀', value: rev0, fill: '#111', isTotal: true },
+    { name: 'Rev\u2080', value: rev0, fill: '#111', isTotal: true },
     { name: 'Users', value: dUsers, fill: '#2563eb' },
     { name: 'Price', value: dPrice, fill: '#f59e0b' },
-    { name: 'Rev₁', value: rev1, fill: '#111', isTotal: true },
+    { name: 'Rev\u2081', value: rev1, fill: '#111', isTotal: true },
   ];
 
   const laspEntries: WaterfallEntry[] = [
-    { name: 'Rev₀', value: rev0, fill: '#111', isTotal: true },
+    { name: 'Rev\u2080', value: rev0, fill: '#111', isTotal: true },
     { name: 'Users', value: laspUsers, fill: '#2563eb' },
     { name: 'Price', value: laspPrice, fill: '#f59e0b' },
     { name: 'Residual', value: laspResid, fill: '#ef4444' },
-    { name: 'Rev₁', value: rev1, fill: '#111', isTotal: true },
+    { name: 'Rev\u2081', value: rev1, fill: '#111', isTotal: true },
   ];
 
   const L = logMean(rev1, rev0);
-
-  const fmtK = (v: number) => {
-    if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
-    if (Math.abs(v) >= 1e3) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
-  };
 
   return (
     <section className="chapter" id="chapter-5">
@@ -51,7 +46,7 @@ export function Ch6_LmdiInAction() {
 
       <p>
         Now let's put it all together. <strong>Revenue = Users × Price.</strong> Revenue changed
-        from {fmtK(rev0)} to {fmtK(rev1)}. How much from each factor?
+        from {formatCurrency(rev0)} to {formatCurrency(rev1)}. How much from each factor?
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-sm)' }}>
@@ -64,16 +59,16 @@ export function Ch6_LmdiInAction() {
       <div className="kpi-row">
         <div className="kpi-card">
           <span className="label">Revenue₀</span>
-          <div className="value">{fmtK(rev0)}</div>
+          <div className="value">{formatCurrency(rev0)}</div>
         </div>
         <div className="kpi-card">
           <span className="label">Revenue₁</span>
-          <div className="value">{fmtK(rev1)}</div>
+          <div className="value">{formatCurrency(rev1)}</div>
         </div>
         <div className="kpi-card">
           <span className="label">ΔRevenue</span>
           <div className="value" style={{ color: dRev >= 0 ? 'var(--positive)' : 'var(--negative)' }}>
-            {dRev >= 0 ? '+' : ''}{fmtK(dRev)}
+            {dRev >= 0 ? '+' : ''}{formatCurrency(dRev)}
           </div>
         </div>
       </div>
@@ -82,19 +77,19 @@ export function Ch6_LmdiInAction() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
         <div className="chart-container">
           <div className="label" style={{ marginBottom: 8 }}>Laspeyres (with residual)</div>
-          <WaterfallChart entries={laspEntries} height={280} formatValue={fmtK} />
+          <WaterfallChart entries={laspEntries} height={280} formatValue={formatCurrency} />
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', marginTop: 8 }}>
-            <div>Users: <strong style={{ color: '#2563eb' }}>{fmtK(laspUsers)}</strong></div>
-            <div>Price: <strong style={{ color: '#f59e0b' }}>{fmtK(laspPrice)}</strong></div>
-            <div>Residual: <strong style={{ color: '#ef4444' }}>{fmtK(laspResid)}</strong></div>
+            <div>Users: <strong style={{ color: '#2563eb' }}>{formatCurrency(laspUsers)}</strong></div>
+            <div>Price: <strong style={{ color: '#f59e0b' }}>{formatCurrency(laspPrice)}</strong></div>
+            <div>Residual: <strong style={{ color: '#ef4444' }}>{formatCurrency(laspResid)}</strong></div>
           </div>
         </div>
         <div className="chart-container">
           <div className="label" style={{ marginBottom: 8 }}>LMDI (exact, no residual)</div>
-          <WaterfallChart entries={lmdiEntries} height={280} formatValue={fmtK} />
+          <WaterfallChart entries={lmdiEntries} height={280} formatValue={formatCurrency} />
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', marginTop: 8 }}>
-            <div>Users: <strong style={{ color: '#2563eb' }}>{fmtK(dUsers)}</strong></div>
-            <div>Price: <strong style={{ color: '#f59e0b' }}>{fmtK(dPrice)}</strong></div>
+            <div>Users: <strong style={{ color: '#2563eb' }}>{formatCurrency(dUsers)}</strong></div>
+            <div>Price: <strong style={{ color: '#f59e0b' }}>{formatCurrency(dPrice)}</strong></div>
             <div style={{ color: 'var(--positive)' }}>No residual ✓</div>
           </div>
         </div>

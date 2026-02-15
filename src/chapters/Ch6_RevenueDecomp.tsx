@@ -1,25 +1,26 @@
 import { useState, useMemo } from 'react';
 import { Formula } from '../components/Formula';
 import { WaterfallChart, type WaterfallEntry } from '../components/WaterfallChart';
-import { segments as defaultSegments, FACTOR_LABELS, getRevenue } from '../data/revenueData';
+import { segments as defaultSegments, FACTOR_LABELS, type FactorKey, getRevenue } from '../data/revenueData';
 import { lmdiDecompose } from '../utils/lmdi';
+import { formatCurrency } from '../utils/format';
 
-const COLORS: Record<string, string> = {
+const COLORS: Record<FactorKey, string> = {
   MAU: '#2563eb',
   OPC: '#f59e0b',
   IPO: '#22c55e',
   AIV: '#a855f7',
 };
 
-const FACTOR_DESCRIPTIONS: Record<string, string> = {
+const FACTOR_DESCRIPTIONS: Record<FactorKey, string> = {
   MAU: 'Monthly Active Users',
   OPC: 'Orders Per Customer',
   IPO: 'Items Per Order',
   AIV: 'Average Item Value',
 };
 
-export function Ch7_RevenueDecomp() {
-  const [data] = useState(defaultSegments);
+export function Ch6_RevenueDecomp() {
+  const data = defaultSegments;
   const [viewMode, setViewMode] = useState<'absolute' | 'percent'>('absolute');
 
   const decomp = useMemo(() => {
@@ -54,13 +55,6 @@ export function Ch7_RevenueDecomp() {
     entries.push({ name: 'Forecast', value: decomp.totalForecast, fill: '#111', isTotal: true });
     return entries;
   }, [decomp]);
-
-  const fmt = (v: number) => {
-    if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
-    if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
-    if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
-    return `$${v.toFixed(0)}`;
-  };
 
   return (
     <section className="chapter" id="chapter-6">
@@ -141,16 +135,16 @@ export function Ch7_RevenueDecomp() {
       <div className="kpi-row">
         <div className="kpi-card">
           <span className="label">Scenario</span>
-          <div className="value">{fmt(decomp.totalScenario)}</div>
+          <div className="value">{formatCurrency(decomp.totalScenario)}</div>
         </div>
         <div className="kpi-card">
           <span className="label">Forecast</span>
-          <div className="value">{fmt(decomp.totalForecast)}</div>
+          <div className="value">{formatCurrency(decomp.totalForecast)}</div>
         </div>
         <div className="kpi-card">
           <span className="label">ΔRevenue</span>
           <div className="value" style={{ color: dTotal >= 0 ? 'var(--positive)' : 'var(--negative)' }}>
-            {dTotal >= 0 ? '+' : ''}{fmt(dTotal)}
+            {dTotal >= 0 ? '+' : ''}{formatCurrency(dTotal)}
           </div>
         </div>
       </div>
@@ -158,15 +152,15 @@ export function Ch7_RevenueDecomp() {
       {/* Waterfall Chart — using shared component */}
       <div className="chart-container">
         <div className="label" style={{ marginBottom: 8 }}>LMDI Factor Contribution Waterfall</div>
-        <WaterfallChart entries={waterfallEntries} height={340} formatValue={fmt} />
+        <WaterfallChart entries={waterfallEntries} height={340} formatValue={formatCurrency} />
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', marginTop: 8 }}>
           {FACTOR_LABELS.map((label, k) => (
             <div key={label}>
-              {label}: <strong style={{ color: COLORS[label] }}>{fmt(decomp.totalContribs[k])}</strong>
+              {label}: <strong style={{ color: COLORS[label] }}>{formatCurrency(decomp.totalContribs[k])}</strong>
             </div>
           ))}
           <div style={{ color: 'var(--positive)', marginTop: 4 }}>
-            Sum = {fmt(decomp.totalContribs.reduce((a, b) => a + b, 0))} = ΔRevenue ✓
+            Sum = {formatCurrency(decomp.totalContribs.reduce((a, b) => a + b, 0))} = ΔRevenue ✓
           </div>
         </div>
       </div>
@@ -236,15 +230,15 @@ export function Ch7_RevenueDecomp() {
                 <tr key={seg.name}>
                   <td>{seg.name}</td>
                   <td style={{ color: colorFor(segDelta) }}>
-                    {viewMode === 'absolute' ? fmt(segDelta) : pct(segDelta)}
+                    {viewMode === 'absolute' ? formatCurrency(segDelta) : pct(segDelta)}
                   </td>
                   {contribs.map((c, k) => (
                     <td key={k} style={{ color: colorFor(c) }}>
-                      {viewMode === 'absolute' ? fmt(c) : pct(c)}
+                      {viewMode === 'absolute' ? formatCurrency(c) : pct(c)}
                     </td>
                   ))}
                   <td style={{ color: 'var(--ink-50)' }}>
-                    {viewMode === 'absolute' ? fmt(checkSum) : pct(checkSum)}
+                    {viewMode === 'absolute' ? formatCurrency(checkSum) : pct(checkSum)}
                   </td>
                 </tr>
               );
@@ -252,15 +246,15 @@ export function Ch7_RevenueDecomp() {
             {/* Total row */}
             <tr>
               <td>Total</td>
-              <td>{viewMode === 'absolute' ? fmt(dTotal) : '100%'}</td>
+              <td>{viewMode === 'absolute' ? formatCurrency(dTotal) : '100%'}</td>
               {decomp.totalContribs.map((c, k) => (
                 <td key={k} style={{ color: c > 0.5 ? 'var(--positive)' : c < -0.5 ? 'var(--negative)' : 'var(--ink-50)' }}>
                   {viewMode === 'absolute'
-                    ? fmt(c)
+                    ? formatCurrency(c)
                     : dTotal !== 0 ? `${((c / dTotal) * 100).toFixed(1)}%` : '0%'}
                 </td>
               ))}
-              <td>{viewMode === 'absolute' ? fmt(decomp.totalContribs.reduce((a, b) => a + b, 0)) : '100%'}</td>
+              <td>{viewMode === 'absolute' ? formatCurrency(decomp.totalContribs.reduce((a, b) => a + b, 0)) : '100%'}</td>
             </tr>
           </tbody>
         </table>

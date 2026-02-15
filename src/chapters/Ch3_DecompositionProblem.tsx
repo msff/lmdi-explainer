@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Formula } from '../components/Formula';
 import { Slider } from '../components/Slider';
 import { WaterfallChart, type WaterfallEntry } from '../components/WaterfallChart';
+import { formatCurrency } from '../utils/format';
 
 export function Ch3_DecompositionProblem() {
   const [x0, setX0] = useState(600);
@@ -38,11 +39,6 @@ export function Ch3_DecompositionProblem() {
     { name: 'V₁', value: v1, fill: '#111', isTotal: true },
   ];
 
-  const fmtK = (v: number) => {
-    if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
-    if (Math.abs(v) >= 1e3) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v}`;
-  };
 
   return (
     <section className="chapter" id="chapter-3">
@@ -52,12 +48,12 @@ export function Ch3_DecompositionProblem() {
       </div>
 
       <p>
-        Last quarter: <strong>{x0.toLocaleString()} users</strong> × <strong>${y0}/user</strong> = <strong>{fmtK(v0)}</strong> revenue.<br />
-        This quarter: <strong>{x1.toLocaleString()} users</strong> × <strong>${y1}/user</strong> = <strong>{fmtK(v1)}</strong> revenue.
+        Last quarter: <strong>{x0.toLocaleString()} users</strong> × <strong>${y0}/user</strong> = <strong>{formatCurrency(v0)}</strong> revenue.<br />
+        This quarter: <strong>{x1.toLocaleString()} users</strong> × <strong>${y1}/user</strong> = <strong>{formatCurrency(v1)}</strong> revenue.
       </p>
 
       <p>
-        Revenue changed by <strong>{fmtK(dV)}</strong>. How much came from more users vs. higher price?
+        Revenue changed by <strong>{formatCurrency(dV)}</strong>. How much came from more users vs. higher price?
       </p>
 
       <p>
@@ -72,20 +68,20 @@ export function Ch3_DecompositionProblem() {
         fontSize: '0.8125rem',
         lineHeight: 1.8,
       }}>
-        <div>"What if only users changed?" → ({x1.toLocaleString()} − {x0.toLocaleString()}) × ${y0} = <strong style={{ color: '#2563eb' }}>{fmtK(xEffect)}</strong></div>
-        <div>"What if only price changed?" → {x0.toLocaleString()} × (${y1} − ${y0}) = <strong style={{ color: '#f59e0b' }}>{fmtK(yEffect)}</strong></div>
+        <div>"What if only users changed?" → ({x1.toLocaleString()} − {x0.toLocaleString()}) × ${y0} = <strong style={{ color: '#2563eb' }}>{formatCurrency(xEffect)}</strong></div>
+        <div>"What if only price changed?" → {x0.toLocaleString()} × (${y1} − ${y0}) = <strong style={{ color: '#f59e0b' }}>{formatCurrency(yEffect)}</strong></div>
         <div style={{ marginTop: 8, borderTop: '1px solid var(--ink-10)', paddingTop: 8 }}>
-          Sum: {fmtK(xEffect)} + {fmtK(yEffect)} = {fmtK(xEffect + yEffect)}.
-          But actual change = {fmtK(dV)}.
+          Sum: {formatCurrency(xEffect)} + {formatCurrency(yEffect)} = {formatCurrency(xEffect + yEffect)}.
+          But actual change = {formatCurrency(dV)}.
           {residual !== 0 && (
-            <strong style={{ color: '#ef4444' }}> Missing: {fmtK(residual)}</strong>
+            <strong style={{ color: '#ef4444' }}> Missing: {formatCurrency(residual)}</strong>
           )}
         </div>
       </div>
 
       <p>
         This is called the <strong>Laspeyres method</strong>. It evaluates each factor at the
-        old value of the other. The missing piece — <strong style={{ color: '#ef4444' }}>{fmtK(residual)}</strong> ({residualPct.toFixed(1)}%)
+        old value of the other. The missing piece — <strong style={{ color: '#ef4444' }}>{formatCurrency(residual)}</strong> ({residualPct.toFixed(1)}%)
         — is the "interaction effect": extra revenue from <em>new</em> users paying the <em>new</em> price.
         It belongs to both factors simultaneously. No fair way to split it.
       </p>
@@ -102,7 +98,7 @@ export function Ch3_DecompositionProblem() {
             fill="var(--ink)" fillOpacity={0.08} stroke="var(--ink)" strokeWidth={1} />
           <text x={w0 / 2} y={svgH - h0 / 2} textAnchor="middle" dominantBaseline="middle"
             fontFamily="var(--font-mono)" fontSize={11} fill="var(--ink-50)">
-            V₀ = {fmtK(v0)}
+            V₀ = {formatCurrency(v0)}
           </text>
 
           {/* x-effect strip (horizontal) */}
@@ -176,16 +172,16 @@ export function Ch3_DecompositionProblem() {
       <div className="kpi-row">
         <div className="kpi-card">
           <span className="label">V₀</span>
-          <div className="value">{fmtK(v0)}</div>
+          <div className="value">{formatCurrency(v0)}</div>
         </div>
         <div className="kpi-card">
           <span className="label">V₁</span>
-          <div className="value">{fmtK(v1)}</div>
+          <div className="value">{formatCurrency(v1)}</div>
         </div>
         <div className="kpi-card">
           <span className="label">ΔV</span>
           <div className="value" style={{ color: dV >= 0 ? 'var(--positive)' : 'var(--negative)' }}>
-            {dV >= 0 ? '+' : ''}{fmtK(dV)}
+            {dV >= 0 ? '+' : ''}{formatCurrency(dV)}
           </div>
         </div>
         <div className="kpi-card">
@@ -198,12 +194,12 @@ export function Ch3_DecompositionProblem() {
       {/* Waterfall */}
       <div className="chart-container">
         <div className="label" style={{ marginBottom: 8 }}>Laspeyres Decomposition</div>
-        <WaterfallChart entries={waterfall} formatValue={fmtK} />
+        <WaterfallChart entries={waterfall} formatValue={formatCurrency} />
       </div>
 
       <div className="formula-block">
         <Formula
-          tex={`\\underbrace{(x_1 - x_0) \\cdot y_0}_{\\color{blue}{\\text{Users} = \\text{${fmtK(xEffect).replace('$', '\\$')}}}} + \\underbrace{x_0 \\cdot (y_1 - y_0)}_{\\color{orange}{\\text{Price} = \\text{${fmtK(yEffect).replace('$', '\\$')}}}} + \\underbrace{(x_1 - x_0)(y_1 - y_0)}_{\\color{red}{\\text{residual} = \\text{${fmtK(residual).replace('$', '\\$')}}}} = \\text{${fmtK(dV).replace('$', '\\$')}}`}
+          tex={`\\underbrace{(x_1 - x_0) \\cdot y_0}_{\\color{blue}{\\text{Users} = \\text{${formatCurrency(xEffect).replace('$', '\\$')}}}} + \\underbrace{x_0 \\cdot (y_1 - y_0)}_{\\color{orange}{\\text{Price} = \\text{${formatCurrency(yEffect).replace('$', '\\$')}}}} + \\underbrace{(x_1 - x_0)(y_1 - y_0)}_{\\color{red}{\\text{residual} = \\text{${formatCurrency(residual).replace('$', '\\$')}}}} = \\text{${formatCurrency(dV).replace('$', '\\$')}}`}
           display
         />
       </div>

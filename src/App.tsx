@@ -5,9 +5,9 @@ import { Ch1_WhatIsLog } from './chapters/Ch1_WhatIsLog';
 import { Ch2_ProductsToSums } from './chapters/Ch2_ProductsToSums';
 import { Ch3_DecompositionProblem } from './chapters/Ch3_DecompositionProblem';
 import { Ch4_LogarithmicMean } from './chapters/Ch4_LogarithmicMean';
-import { Ch6_LmdiInAction } from './chapters/Ch6_LmdiInAction';
-import { Ch7_RevenueDecomp } from './chapters/Ch7_RevenueDecomp';
-import { Ch8_History } from './chapters/Ch8_History';
+import { Ch5_LmdiInAction } from './chapters/Ch5_LmdiInAction';
+import { Ch6_RevenueDecomp } from './chapters/Ch6_RevenueDecomp';
+import { Ch7_History } from './chapters/Ch7_History';
 
 const FACTORS = [
   { label: 'Users', color: '#2563eb' },
@@ -33,8 +33,19 @@ function HeroInfographic() {
   const factorHs = [8, 5, 11, 7]; // total = 31
   const endH = startH + factorHs.reduce((s, h) => s + h, 0); // 81
 
-  // Running Y tracks the waterfall top as bars stack upward
-  let runY = baseY - startH; // top of start bar
+  // Pre-compute bar positions (no mutable state during render)
+  const barPositions = factorHs.reduce<{ bottom: number; top: number }[]>((acc, h) => {
+    const prevTop = acc.length === 0 ? baseY - startH : acc[acc.length - 1].top;
+    acc.push({ bottom: prevTop, top: prevTop - h });
+    return acc;
+  }, []);
+
+  // Pre-compute end bar and annotation coordinates
+  const endX = startX + 5 * (barW + gap);
+  const lastBarTop = barPositions[barPositions.length - 1].top;
+  const annX1 = startX + barW + 6;
+  const annX2 = startX + 5 * (barW + gap) - 6;
+  const annY = baseY + 28;
 
   return (
     <div style={{
@@ -88,9 +99,7 @@ function HeroInfographic() {
         {FACTORS.map((f, i) => {
           const x = startX + (i + 1) * (barW + gap);
           const h = factorHs[i];
-          const barBottom = runY;    // bottom of this bar = top of previous
-          const barTop = runY - h;   // this bar extends upward
-          runY = barTop;             // next bar starts at this top
+          const { bottom: barBottom, top: barTop } = barPositions[i];
           return (
             <g key={f.label}>
               {/* Dashed connector from previous bar top to this bar bottom */}
@@ -120,48 +129,31 @@ function HeroInfographic() {
         })}
 
         {/* End bar */}
-        {(() => {
-          const endX = startX + 5 * (barW + gap);
-          return (
-            <>
-              {/* Connector from last factor to end bar */}
-              <line
-                x1={endX - gap} x2={endX}
-                y1={runY} y2={runY}
-                stroke="var(--ink-10)" strokeWidth={1} strokeDasharray="3 2"
-              />
-              <rect x={endX} y={baseY - endH} width={barW} height={endH}
-                fill="var(--ink)" rx={2} />
-              <text x={endX + barW / 2} y={baseY + 14}
-                textAnchor="middle" fontSize={9} fontWeight={700} fill="var(--ink)"
-                fontFamily="var(--font-mono)">
-                $378M
-              </text>
-            </>
-          );
-        })()}
+        <line
+          x1={endX - gap} x2={endX}
+          y1={lastBarTop} y2={lastBarTop}
+          stroke="var(--ink-10)" strokeWidth={1} strokeDasharray="3 2"
+        />
+        <rect x={endX} y={baseY - endH} width={barW} height={endH}
+          fill="var(--ink)" rx={2} />
+        <text x={endX + barW / 2} y={baseY + 14}
+          textAnchor="middle" fontSize={9} fontWeight={700} fill="var(--ink)"
+          fontFamily="var(--font-mono)">
+          $378M
+        </text>
 
-        {/* "+$68M — how to split?" annotation between start and end */}
-        {(() => {
-          const annX1 = startX + barW + 6;
-          const annX2 = startX + 5 * (barW + gap) - 6;
-          const annY = baseY + 28;
-          return (
-            <>
-              <line x1={annX1} x2={annX2} y1={annY} y2={annY}
-                stroke="var(--ink-20)" strokeWidth={1} />
-              <line x1={annX1} x2={annX1} y1={annY - 3} y2={annY + 3}
-                stroke="var(--ink-20)" strokeWidth={1} />
-              <line x1={annX2} x2={annX2} y1={annY - 3} y2={annY + 3}
-                stroke="var(--ink-20)" strokeWidth={1} />
-              <text x={(annX1 + annX2) / 2} y={annY - 6}
-                textAnchor="middle" fontSize={9} fontWeight={700} fill="var(--ink-50)"
-                fontFamily="var(--font-mono)">
-                +$68M — how to split?
-              </text>
-            </>
-          );
-        })()}
+        {/* "+$68M — how to split?" annotation */}
+        <line x1={annX1} x2={annX2} y1={annY} y2={annY}
+          stroke="var(--ink-20)" strokeWidth={1} />
+        <line x1={annX1} x2={annX1} y1={annY - 3} y2={annY + 3}
+          stroke="var(--ink-20)" strokeWidth={1} />
+        <line x1={annX2} x2={annX2} y1={annY - 3} y2={annY + 3}
+          stroke="var(--ink-20)" strokeWidth={1} />
+        <text x={(annX1 + annX2) / 2} y={annY - 6}
+          textAnchor="middle" fontSize={9} fontWeight={700} fill="var(--ink-50)"
+          fontFamily="var(--font-mono)">
+          +$68M — how to split?
+        </text>
       </svg>
     </div>
   );
@@ -206,9 +198,9 @@ export default function App() {
         <ScrollReveal><Ch2_ProductsToSums /></ScrollReveal>
         <ScrollReveal><Ch3_DecompositionProblem /></ScrollReveal>
         <ScrollReveal><Ch4_LogarithmicMean /></ScrollReveal>
-        <ScrollReveal><Ch6_LmdiInAction /></ScrollReveal>
-        <ScrollReveal><Ch7_RevenueDecomp /></ScrollReveal>
-        <ScrollReveal><Ch8_History /></ScrollReveal>
+        <ScrollReveal><Ch5_LmdiInAction /></ScrollReveal>
+        <ScrollReveal><Ch6_RevenueDecomp /></ScrollReveal>
+        <ScrollReveal><Ch7_History /></ScrollReveal>
       </main>
     </>
   );

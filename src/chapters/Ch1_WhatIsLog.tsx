@@ -72,8 +72,8 @@ export function Ch1_WhatIsLog() {
               label={{ value: 'ln(x)', angle: -90, position: 'insideLeft', style: { fontFamily: 'var(--font-mono)', fontSize: 11 } }}
             />
             <Tooltip
-              formatter={(val: any) => Number(val).toFixed(3)}
-              labelFormatter={(val: any) => `x = ${Number(val).toFixed(1)}`}
+              formatter={(val: string | number | undefined) => val != null ? Number(val).toFixed(3) : ''}
+              labelFormatter={(label) => `x = ${Number(label).toFixed(1)}`}
               contentStyle={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}
             />
             {/* Key reference lines */}
