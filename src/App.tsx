@@ -5,7 +5,6 @@ import { Ch1_WhatIsLog } from './chapters/Ch1_WhatIsLog';
 import { Ch2_ProductsToSums } from './chapters/Ch2_ProductsToSums';
 import { Ch3_DecompositionProblem } from './chapters/Ch3_DecompositionProblem';
 import { Ch4_LogarithmicMean } from './chapters/Ch4_LogarithmicMean';
-import { Ch5_BridgeIdentity } from './chapters/Ch5_BridgeIdentity';
 import { Ch6_LmdiInAction } from './chapters/Ch6_LmdiInAction';
 import { Ch7_RevenueDecomp } from './chapters/Ch7_RevenueDecomp';
 
@@ -24,17 +23,26 @@ export default function App() {
             <h1>LMDI Decomposition</h1>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <p style={{ maxWidth: 640, marginTop: 'var(--spacing-sm)', fontSize: '0.9375rem', color: 'var(--ink-50)' }}>
-              From basic logarithms to real-world revenue decomposition —
-              learn how LMDI splits changes into factor contributions with zero residual.
-            </p>
+            <div style={{ maxWidth: 640, marginTop: 'var(--spacing-sm)', fontSize: '0.9375rem', color: 'var(--ink-50)' }}>
+              <p>
+                Your company's revenue changed from $10.1B to $10.3B. The CEO asks:
+                "How much came from more users vs. higher frequency vs. bigger baskets vs. price increases?"
+              </p>
+              <p>
+                You try the obvious approach — hold everything else constant and vary one factor at a time.
+                But the pieces don't add up. There's always a mysterious gap.
+              </p>
+              <p style={{ color: 'var(--ink)' }}>
+                <strong>LMDI</strong> (Logarithmic Mean Divisia Index) eliminates that gap entirely.
+                This explainer builds the intuition from scratch — no prerequisites beyond arithmetic.
+              </p>
+            </div>
           </ScrollReveal>
         </header>
         <ScrollReveal><Ch1_WhatIsLog /></ScrollReveal>
         <ScrollReveal><Ch2_ProductsToSums /></ScrollReveal>
         <ScrollReveal><Ch3_DecompositionProblem /></ScrollReveal>
         <ScrollReveal><Ch4_LogarithmicMean /></ScrollReveal>
-        <ScrollReveal><Ch5_BridgeIdentity /></ScrollReveal>
         <ScrollReveal><Ch6_LmdiInAction /></ScrollReveal>
         <ScrollReveal><Ch7_RevenueDecomp /></ScrollReveal>
       </main>

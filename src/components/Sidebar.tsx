@@ -3,7 +3,6 @@ const CHAPTERS = [
   'Products Become Sums',
   'The Decomposition Problem',
   'The Logarithmic Mean',
-  'The Bridge Identity',
   'LMDI in Action',
   'Revenue Decomposition',
 ];

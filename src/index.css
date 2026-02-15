@@ -84,7 +84,7 @@ main {
   flex: 1;
   margin-left: var(--sidebar-width);
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
-  max-width: calc(960px + var(--sidebar-width));
+  max-width: calc(720px + var(--sidebar-width));
 }
 
 /* ─── Wireframe Grid Background ─────────────────── */

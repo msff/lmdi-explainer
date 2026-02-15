@@ -1,9 +1,6 @@
 import { useState, useMemo } from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  ResponsiveContainer, Cell, LabelList, Tooltip,
-} from 'recharts';
 import { Formula } from '../components/Formula';
+import { WaterfallChart, type WaterfallEntry } from '../components/WaterfallChart';
 import { segments as defaultSegments, FACTOR_LABELS, getRevenue } from '../data/revenueData';
 import { lmdiDecompose } from '../utils/lmdi';
 
@@ -14,27 +11,30 @@ const COLORS: Record<string, string> = {
   AIV: '#a855f7',
 };
 
+const FACTOR_DESCRIPTIONS: Record<string, string> = {
+  MAU: 'Monthly Active Users',
+  OPC: 'Orders Per Customer',
+  IPO: 'Items Per Order',
+  AIV: 'Average Item Value',
+};
+
 export function Ch7_RevenueDecomp() {
   const [data] = useState(defaultSegments);
   const [viewMode, setViewMode] = useState<'absolute' | 'percent'>('absolute');
 
-  // Compute decomposition
   const decomp = useMemo(() => {
     const sectors = data.map((seg) => ({
       before: [seg.scenario.mau, seg.scenario.opc, seg.scenario.ipo, seg.scenario.aiv],
       after: [seg.forecast.mau, seg.forecast.opc, seg.forecast.ipo, seg.forecast.aiv],
     }));
 
-    // Per-segment decomposition
     const perSegment = data.map((seg) => {
-      const sectorResult = lmdiDecompose([{
+      return lmdiDecompose([{
         before: [seg.scenario.mau, seg.scenario.opc, seg.scenario.ipo, seg.scenario.aiv],
         after: [seg.forecast.mau, seg.forecast.opc, seg.forecast.ipo, seg.forecast.aiv],
       }]);
-      return sectorResult;
     });
 
-    // Total across all segments
     const totalContribs = lmdiDecompose(sectors);
     const totalScenario = data.reduce((s, seg) => s + getRevenue(seg.scenario), 0);
     const totalForecast = data.reduce((s, seg) => s + getRevenue(seg.forecast), 0);
@@ -44,45 +44,85 @@ export function Ch7_RevenueDecomp() {
 
   const dTotal = decomp.totalForecast - decomp.totalScenario;
 
-  // Waterfall chart data (per factor)
-  const waterfallData = useMemo(() => {
-    let running = decomp.totalScenario;
-    const bars = [
-      { name: 'Scenario', base: 0, value: decomp.totalScenario, fill: '#111' },
+  const waterfallEntries: WaterfallEntry[] = useMemo(() => {
+    const entries: WaterfallEntry[] = [
+      { name: 'Scenario', value: decomp.totalScenario, fill: '#111', isTotal: true },
     ];
     FACTOR_LABELS.forEach((label, k) => {
-      const c = decomp.totalContribs[k];
-      bars.push({ name: label, base: running, value: c, fill: COLORS[label] });
-      running += c;
+      entries.push({ name: label, value: decomp.totalContribs[k], fill: COLORS[label] });
     });
-    bars.push({ name: 'Forecast', base: 0, value: decomp.totalForecast, fill: '#111' });
-    return bars;
+    entries.push({ name: 'Forecast', value: decomp.totalForecast, fill: '#111', isTotal: true });
+    return entries;
   }, [decomp]);
 
   const fmt = (v: number) => {
-    if (Math.abs(v) >= 1e9) return `${(v / 1e9).toFixed(2)}B`;
-    if (Math.abs(v) >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
-    if (Math.abs(v) >= 1e3) return `${(v / 1e3).toFixed(0)}K`;
-    return v.toFixed(0);
+    if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
+    if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
+    if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
+    return `$${v.toFixed(0)}`;
   };
 
   return (
-    <section className="chapter" id="chapter-7">
+    <section className="chapter" id="chapter-6">
       <div className="chapter-header">
-        <span className="chapter-number">Ch.07</span>
-        <h2>Real World — Revenue Decomposition by Segment</h2>
+        <span className="chapter-number">Ch.06</span>
+        <h2>From Two Factors to Four — Real Revenue Decomposition</h2>
       </div>
 
       <p>
-        Now for the real thing. A company's revenue is the product of 4 factors across 6 user segments.
+        In Chapter 5, we decomposed <strong>Revenue = Users × Price</strong> into two factors.
+        But real businesses are more complex. A company's revenue is typically a longer chain of factors:
       </p>
 
       <div className="formula-block">
         <Formula
-          tex={`\\text{Revenue}_i = \\text{MAU}_i \\times \\text{OPC}_i \\times \\text{IPO}_i \\times \\text{AIV}_i`}
+          tex={`\\text{Revenue} = \\underbrace{\\text{MAU}}_{\\text{users}} \\times \\underbrace{\\text{OPC}}_{\\text{orders/user}} \\times \\underbrace{\\text{IPO}}_{\\text{items/order}} \\times \\underbrace{\\text{AIV}}_{\\text{avg item value}}`}
           display
         />
       </div>
+
+      {/* Factor legend */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '8px 24px',
+        background: 'var(--surface)',
+        padding: 'var(--spacing-md)',
+        border: '1px solid var(--ink-10)',
+        marginBottom: 'var(--spacing-md)',
+      }}>
+        {FACTOR_LABELS.map((label) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: COLORS[label], flexShrink: 0 }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>
+              <strong style={{ color: COLORS[label] }}>{label}</strong> — {FACTOR_DESCRIPTIONS[label]}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p>
+        <strong>The beautiful thing about LMDI:</strong> the formula doesn't change when you add more factors.
+        With 2 factors, each contribution was L × ln(factor ratio). With 4 factors — same thing,
+        just more terms:
+      </p>
+
+      <div className="formula-block">
+        <Formula
+          tex={`\\Delta V_k = L(V^1, V^0) \\times \\ln\\frac{x_k^1}{x_k^0} \\quad \\text{for each factor } k`}
+          display
+        />
+      </div>
+
+      <p>
+        And just like with two factors, the contributions sum exactly to the total change — no residual,
+        even with four factors. The math scales perfectly.
+      </p>
+
+      <p>
+        Now for the real thing. This company has <strong>6 user segments</strong>, each with its own
+        MAU, OPC, IPO, and AIV values.
+      </p>
 
       <div style={{
         background: 'rgba(245,158,11,0.08)',
@@ -94,17 +134,17 @@ export function Ch7_RevenueDecomp() {
         textTransform: 'uppercase',
         letterSpacing: '0.1em',
       }}>
-        Demo data — factor values are synthetic. Revenue totals match Jan 2026 screenshot.
+        Demo data — factor values are synthetic.
       </div>
 
       {/* KPI Cards */}
       <div className="kpi-row">
         <div className="kpi-card">
-          <span className="label">Total Scenario</span>
+          <span className="label">Scenario</span>
           <div className="value">{fmt(decomp.totalScenario)}</div>
         </div>
         <div className="kpi-card">
-          <span className="label">Total Forecast</span>
+          <span className="label">Forecast</span>
           <div className="value">{fmt(decomp.totalForecast)}</div>
         </div>
         <div className="kpi-card">
@@ -113,45 +153,22 @@ export function Ch7_RevenueDecomp() {
             {dTotal >= 0 ? '+' : ''}{fmt(dTotal)}
           </div>
         </div>
-        <div className="kpi-card">
-          <span className="label">Top Factor</span>
-          <div className="value" style={{ fontSize: '1.25rem' }}>
-            {FACTOR_LABELS[decomp.totalContribs.indexOf(
-              decomp.totalContribs.reduce((a, b) => Math.abs(a) > Math.abs(b) ? a : b)
-            )]}
-          </div>
-        </div>
       </div>
 
-      {/* Waterfall Chart */}
+      {/* Waterfall Chart — using shared component */}
       <div className="chart-container">
         <div className="label" style={{ marginBottom: 8 }}>LMDI Factor Contribution Waterfall</div>
-        <ResponsiveContainer width="100%" height={340}>
-          <BarChart data={waterfallData} margin={{ top: 20, right: 20, bottom: 10, left: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(17,17,17,0.07)" />
-            <XAxis dataKey="name" tick={{ fontFamily: 'var(--font-mono)', fontSize: 10 }} />
-            <YAxis tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} tickFormatter={(v) => fmt(v)} />
-            <Tooltip
-              contentStyle={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}
-              formatter={(val: any, name: any) => {
-                if (name === 'base') return [null, null];
-                return [fmt(Number(val)), name];
-              }}
-            />
-            <Bar dataKey="base" stackId="stack" fill="transparent" isAnimationActive={false} />
-            <Bar dataKey="value" stackId="stack" radius={[2, 2, 0, 0]}>
-              {waterfallData.map((entry, i) => (
-                <Cell key={i} fill={entry.fill} />
-              ))}
-              <LabelList
-                dataKey="value"
-                position="top"
-                style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fill: '#111' }}
-                formatter={(v: any) => fmt(Number(v))}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <WaterfallChart entries={waterfallEntries} height={340} formatValue={fmt} />
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', marginTop: 8 }}>
+          {FACTOR_LABELS.map((label, k) => (
+            <div key={label}>
+              {label}: <strong style={{ color: COLORS[label] }}>{fmt(decomp.totalContribs[k])}</strong>
+            </div>
+          ))}
+          <div style={{ color: 'var(--positive)', marginTop: 4 }}>
+            Sum = {fmt(decomp.totalContribs.reduce((a, b) => a + b, 0))} = ΔRevenue ✓
+          </div>
+        </div>
       </div>
 
       {/* View mode toggle */}
@@ -249,54 +266,10 @@ export function Ch7_RevenueDecomp() {
         </table>
       </div>
 
-      {/* Revenue overview table */}
-      <div className="chart-container" style={{ marginTop: 'var(--spacing-md)' }}>
-        <div className="label" style={{ marginBottom: 12 }}>Segment Revenue Overview</div>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Segment</th>
-              <th>Scenario</th>
-              <th>Forecast</th>
-              <th>Diff</th>
-              <th>Diff %</th>
-              <th>Share</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((seg) => {
-              const revS = getRevenue(seg.scenario);
-              const revF = getRevenue(seg.forecast);
-              const diff = revF - revS;
-              const diffPct = revS > 0 ? (diff / revS) * 100 : 0;
-              const share = dTotal !== 0 ? (diff / dTotal) * 100 : 0;
-              return (
-                <tr key={seg.name}>
-                  <td>{seg.name}</td>
-                  <td>{fmt(revS)}</td>
-                  <td>{fmt(revF)}</td>
-                  <td className={diff >= 0 ? '' : 'negative'}>{fmt(diff)}</td>
-                  <td className={diff >= 0 ? '' : 'negative'}>{diffPct.toFixed(2)}%</td>
-                  <td>{share.toFixed(1)}%</td>
-                </tr>
-              );
-            })}
-            <tr>
-              <td>Total</td>
-              <td>{fmt(decomp.totalScenario)}</td>
-              <td>{fmt(decomp.totalForecast)}</td>
-              <td>{fmt(dTotal)}</td>
-              <td>{decomp.totalScenario > 0 ? ((dTotal / decomp.totalScenario) * 100).toFixed(2) : 0}%</td>
-              <td>100%</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
       <div className="takeaway">
-        LMDI cleanly decomposes the total revenue change into contributions from each factor
-        (MAU, OPC, IPO, AIV) across all segments. The contributions sum exactly to the total — no residual.
-        Every penny is accounted for.
+        LMDI scales from 2 factors to any number — same formula, same guarantee.
+        Every dollar of the total revenue change is attributed to a specific factor across all segments.
+        No residual. No arbitrary choices. The logarithmic mean handles it all.
       </div>
     </section>
   );
