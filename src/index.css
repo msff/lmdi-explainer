@@ -86,6 +86,7 @@ main {
   margin-left: var(--sidebar-width);
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
   max-width: calc(720px + var(--sidebar-width));
+  overflow-x: hidden;
 }
 
 /* ─── Wireframe Grid Background ─────────────────── */
@@ -343,6 +344,16 @@ main > * {
   background: var(--ink-50);
 }
 
+/* ─── Mobile Nav Toggle ────────────────────────── */
+.mobile-nav-toggle {
+  display: none;
+}
+
+/* ─── Sidebar Backdrop ─────────────────────────── */
+.sidebar-backdrop {
+  display: none;
+}
+
 /* ─── Sidebar ──────────────────────────────────── */
 .sidebar {
   position: fixed;
@@ -472,5 +483,95 @@ main > * {
     margin-left: 0;
     padding: var(--spacing-md) var(--spacing-sm);
   }
-  .sidebar { display: none; }
+
+  /* ── Mobile nav toggle ── */
+  .mobile-nav-toggle {
+    display: flex;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 200;
+    padding: 8px 14px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-ink);
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: var(--radius);
+  }
+
+  /* ── Sidebar as slide-in overlay ── */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: 260px;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+  }
+
+  /* Restore full sidebar appearance when open */
+  .sidebar-text { display: inline; }
+  .sidebar-link { justify-content: flex-start; padding: var(--spacing-xs) var(--spacing-md); }
+  .sidebar-num { opacity: 0.5; font-size: 0.6875rem; }
+  .sidebar-dot { display: inline-block; }
+  .sidebar-subtitle { display: block; }
+  .sidebar-title { text-align: left; }
+
+  /* ── KPI cards: 2-col grid, compact ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .kpi-card .value {
+    font-size: 1.25rem;
+  }
+  .kpi-card {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  .kpi-card .label {
+    margin-bottom: 4px;
+  }
+  .kpi-card .annotation {
+    font-size: 0.6875rem;
+  }
+
+  /* ── Tables scroll horizontally ── */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Formulas scroll if too wide ── */
+  .formula-block {
+    overflow-x: auto;
+  }
+
+  /* ── Bigger slider thumb for touch ── */
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  .slider-group input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--bg);
+  }
+  .slider-group label {
+    min-width: 60px;
+  }
 }
