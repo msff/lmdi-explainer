@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const CHAPTERS = 6;
+const CHAPTERS = 7;
 
 export function useScrollChapter() {
   const [active, setActive] = useState(1);

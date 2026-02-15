@@ -5,6 +5,7 @@ const CHAPTERS = [
   'The Logarithmic Mean',
   'LMDI in Action',
   'Revenue Decomposition',
+  'History & References',
 ];
 
 interface Props {

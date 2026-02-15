@@ -5,10 +5,10 @@ import { WaterfallChart, type WaterfallEntry } from '../components/WaterfallChar
 import { logMean, lmdiSimple } from '../utils/lmdi';
 
 export function Ch6_LmdiInAction() {
-  const [users0, setUsers0] = useState(1000);
-  const [price0, setPrice0] = useState(50);
-  const [users1, setUsers1] = useState(1200);
-  const [price1, setPrice1] = useState(60);
+  const [users0, setUsers0] = useState(600);
+  const [price0, setPrice0] = useState(30);
+  const [users1, setUsers1] = useState(1400);
+  const [price1, setPrice1] = useState(70);
 
   const rev0 = users0 * price0;
   const rev1 = users1 * price1;

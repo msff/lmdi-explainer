@@ -98,24 +98,6 @@ export function Ch1_WhatIsLog() {
             <ReferenceLine y={lnX} stroke="#2563eb" strokeDasharray="2 2" />
           </LineChart>
         </ResponsiveContainer>
-        {/* Dot marker via CSS overlay */}
-        <div style={{
-          position: 'relative',
-          marginTop: -320,
-          height: 320,
-          pointerEvents: 'none',
-        }}>
-          <div style={{
-            position: 'absolute',
-            left: `calc(${((x - 0) / 100) * 100}% * 0.88 + 5%)`,
-            bottom: `calc(${((lnX + 2.5) / 7.5) * 100}% * 0.82 + 12%)`,
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            background: '#2563eb',
-            transform: 'translate(-50%, 50%)',
-          }} />
-        </div>
       </div>
 
       <div className="formula-block">

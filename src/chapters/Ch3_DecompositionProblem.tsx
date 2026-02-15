@@ -4,10 +4,10 @@ import { Slider } from '../components/Slider';
 import { WaterfallChart, type WaterfallEntry } from '../components/WaterfallChart';
 
 export function Ch3_DecompositionProblem() {
-  const [x0, setX0] = useState(1000);
-  const [y0, setY0] = useState(50);
-  const [x1, setX1] = useState(1200);
-  const [y1, setY1] = useState(60);
+  const [x0, setX0] = useState(600);
+  const [y0, setY0] = useState(30);
+  const [x1, setX1] = useState(1400);
+  const [y1, setY1] = useState(70);
   const [showSliders, setShowSliders] = useState(false);
 
   const v0 = x0 * y0;
@@ -18,14 +18,15 @@ export function Ch3_DecompositionProblem() {
   const residual = (x1 - x0) * (y1 - y0);
   const residualPct = dV !== 0 ? Math.abs(residual / dV) * 100 : 0;
 
-  // Rectangle dimensions (SVG scaling)
-  const maxW = 320;
-  const maxH = 200;
-  const scale = Math.min(maxW / Math.max(x0, x1), maxH / Math.max(y0, y1));
-  const w0 = x0 * scale;
-  const h0 = y0 * scale;
-  const w1 = x1 * scale;
-  const h1 = y1 * scale;
+  // Rectangle dimensions (independent axis scales — different units)
+  const maxW = 400;
+  const maxH = 260;
+  const scaleX = maxW / Math.max(x0, x1);
+  const scaleY = maxH / Math.max(y0, y1);
+  const w0 = x0 * scaleX;
+  const h0 = y0 * scaleY;
+  const w1 = x1 * scaleX;
+  const h1 = y1 * scaleY;
   const svgW = w1 + 60;
   const svgH = h1 + 40;
 
@@ -94,7 +95,7 @@ export function Ch3_DecompositionProblem() {
         <div className="label" style={{ marginBottom: 8 }}>Revenue = Users × Price (as an area)</div>
         <svg
           viewBox={`0 0 ${svgW} ${svgH}`}
-          style={{ width: '100%', maxWidth: 420, display: 'block' }}
+          style={{ width: '100%', maxWidth: 540, display: 'block' }}
         >
           {/* Old rectangle (base) */}
           <rect x={0} y={svgH - h0} width={w0} height={h0}
@@ -202,7 +203,7 @@ export function Ch3_DecompositionProblem() {
 
       <div className="formula-block">
         <Formula
-          tex={`\\underbrace{(x_1 - x_0) \\cdot y_0}_{\\color{blue}{\\text{Users} = ${fmtK(xEffect)}}} + \\underbrace{x_0 \\cdot (y_1 - y_0)}_{\\color{orange}{\\text{Price} = ${fmtK(yEffect)}}} + \\underbrace{(x_1 - x_0)(y_1 - y_0)}_{\\color{red}{\\text{residual} = ${fmtK(residual)}}} = ${fmtK(dV)}`}
+          tex={`\\underbrace{(x_1 - x_0) \\cdot y_0}_{\\color{blue}{\\text{Users} = \\text{${fmtK(xEffect).replace('$', '\\$')}}}} + \\underbrace{x_0 \\cdot (y_1 - y_0)}_{\\color{orange}{\\text{Price} = \\text{${fmtK(yEffect).replace('$', '\\$')}}}} + \\underbrace{(x_1 - x_0)(y_1 - y_0)}_{\\color{red}{\\text{residual} = \\text{${fmtK(residual).replace('$', '\\$')}}}} = \\text{${fmtK(dV).replace('$', '\\$')}}`}
           display
         />
       </div>

@@ -65,7 +65,7 @@ export function Ch2_ProductsToSums() {
             <BarChart data={barData} margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(17,17,17,0.07)" />
               <XAxis dataKey="name" tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} />
-              <YAxis tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} />
+              <YAxis domain={[0, 400]} tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} />
               <Tooltip contentStyle={{ fontFamily: 'var(--font-mono)', fontSize: 12 }} />
               <Bar dataKey="value" radius={[2, 2, 0, 0]}>
                 <Cell fill="#111" />
@@ -81,7 +81,7 @@ export function Ch2_ProductsToSums() {
             <BarChart data={stackedData} margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(17,17,17,0.07)" />
               <XAxis dataKey="name" tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} />
-              <YAxis tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} />
+              <YAxis domain={[0, 7]} tick={{ fontFamily: 'var(--font-mono)', fontSize: 11 }} />
               <Tooltip contentStyle={{ fontFamily: 'var(--font-mono)', fontSize: 12 }} />
               <Bar dataKey="lnA" stackId="stack" fill="#2563eb" name="ln(a)" radius={[0, 0, 0, 0]} />
               <Bar dataKey="lnB" stackId="stack" fill="#f59e0b" name="ln(b)" radius={[2, 2, 0, 0]} />
